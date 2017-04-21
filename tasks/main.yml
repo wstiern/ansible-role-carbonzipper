@@ -36,7 +36,7 @@
     - { dst: /var/log/carbonzipper/, state: directory }
 
 - name: deploy carbonzipper configs
-  template: dest=/usr/local/bin/{{ item }} src={{ item }}.j2
+  template: dest=/usr/local/etc/{{ item }} src={{ item }}.j2
   with_items:
     - carbonzipper.conf
   notify:
