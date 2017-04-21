@@ -1,0 +1,20 @@
+carbonzipper_listen_port: 8081
+carbonzipper_max_goprocs: 0
+
+carbonzipper_graphite_host:
+carbonzipper_graphite_port:
+
+carbonzipper_report_interval: 60
+carbonzipper_report_prefix: "carbon.zipper"
+
+carbonzipper_buckets: 10
+carbonzipper_timeoutms: 10000
+carbonzipper_timeoutms_after_all_started: 2000
+carbonzipper_concurrency_limit_per_server: 0
+carbonzipper_max_idle_conns_per_host: 20
+
+carbonzipper_backends:
+    - "{{ hostvars['graphite01']['ec2_private_ip_address'] }}:8070"
+
+carbonzipper_search_backend: "http://127.0.0.1:8070"
+carbonzipper_search_prefix: "virt.v1.*"

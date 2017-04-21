@@ -1,0 +1,56 @@
+---
+- name: set distro-specific variables
+  include_vars: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_os_family }}.yml'
+    - default.yml
+
+- name: install go-repo
+  yum_repository:
+    name: go-repo
+    description: go-repo - CentOS
+    baseurl: https://mirror.go-repo.io/centos/$releasever/$basearch/
+    gpgcheck: yes
+    enabled: yes
+  when:
+    - (ansible_distribution == "CentOS") or (ansible_distribution == "RedHat")
+
+- name: install dependencies
+  package: name={{ item }}
+  with_items:
+    - golang
+  when:
+    - (ansible_distribution == "CentOS") or (ansible_distribution == "RedHat")
+
+- name: install carbonzipper from source
+  command: "GOPATH=/tmp go get github.com/go-graphite/carbonzipper && GOPATH=/tmp go build github.com/go--graphite/carbonzipper && mv /tmp/carbonzipper /usr/local/bin/"
+  args:
+    creates: /usr/local/bin/carbonzipper
+  when:
+    - (ansible_distribution == "CentOS") or (ansible_distribution == "RedHat")
+    - ansible_distribution_major_version == "7"
+  
+- name: create required files and folders
+  file: path={{ item.dst }} state={{ item.state }}
+  with_items:
+    - { dst: /var/log/carbonzipper/, state: directory }
+
+- name: deploy carbonzipper configs
+  template: dest=/usr/local/bin/{{ item }} src={{ item }}.j2
+  with_items:
+    - carbonzipper.conf
+  notify:
+    - restart carbonzipper
+
+- name: deploy systemd service unit file
+  template: dest=/etc/systemd/system/{{ item }} src={{ item }}.j2
+  with_items:
+    - carbonzipper.service
+  notify:
+    - restart carbonzipper
+  when:     
+    - (ansible_distribution == "CentOS") or (ansible_distribution == "RedHat")
+    - ansible_distribution_major_version == "7"
+
+- name: enable and start carbonzipper
+  service: name=carbonzipper enabled=yes state=started

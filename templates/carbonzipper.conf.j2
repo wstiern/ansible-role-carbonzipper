@@ -1,0 +1,28 @@
+{
+  "Port": {{ carbonzipper_listen_port }},
+  "MaxProcs": {{ carbonzipper_go_maxprocs }},
+  "GraphiteHost": "{{ carbonzipper_graphite_host }}:{{ carbonzipper_graphite_port }}",
+  "IntervalSec": {{ carbonzipper_report_interval }},
+  "InternalMetricPrefix": "{{ carbonzipper_report_prefix }}",
+  "Buckets": {{ carbonzipper_buckets }},
+  "TimeoutMs": {{ carbonzipper_timeoutms }},
+  "TimeoutMsAfterAllStarted": {{ carbonzipper_timeoutms_after_all_started }},
+  "ConcurrencyLimitPerServer": {{ carbonzipper_concurrency_limit_per_server }},
+  "MaxIdleConnsPerHost": {{ carbonzipper_max_idle_conns_per_host }},
+  "Backends": [
+{% for backend in carbonzipper_backends.items() %}
+    "http://{{ backend }}"
+{% endfor %}
+  ],
+  "SearchBackend": "{{ carbonzipper_search_backend }}",
+  "SearchPrefix": "{{ carbonzipper_search_prefix }}",
+  "Logger": [
+    {
+      "Logger": "",
+      "File": "/var/log/carbonzipper/carbonzipper.log",
+      "Level": "info",
+      "Encoding": "json"
+    }
+  ]
+}
+
