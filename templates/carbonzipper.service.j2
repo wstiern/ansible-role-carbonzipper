@@ -1,0 +1,18 @@
+[Unit]
+Description=carbonzipper
+Documentation=https://github.com/go-graphite/carbonzipper
+
+[Service]
+Type=forking
+PIDFile=/var/run/carbonzipper.pid
+Environment=Staging
+ExecStart=/usr/local/bin/carbonzipper -c /usr/local/etc/carbonzipper.conf -pid /var/run/carbonzipper.pid &
+ExecStop=pkill -9 carbonzipper
+
+ExecReload=pkill -2 carbonzipper
+Restart=always
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
